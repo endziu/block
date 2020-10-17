@@ -57,8 +57,8 @@ const main = async () => {
   }
 
   data.push({ blockNumber, min: blockMin, mean: blockMean, median: blockMedian, max: blockMax, buckets })
-  //console.clear()
-  //console.log(data)
+  console.clear()
+  console.log(data && data[data.length - 1])
 }
 
 main()
