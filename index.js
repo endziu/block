@@ -1,5 +1,8 @@
 const fetch = require('node-fetch')
-const { __, map, reduce, filter, pipe, prop, juxt, head, median, mean, min, max, sort, divide } = require('ramda')
+const express = require('express')
+const server = express()
+
+const { __, map, reduce, filter, pipe, prop, juxt, head, median, mean, min, max, divide, sort, reverse } = require('ramda')
 
 const { ETHERSCAN_APIKEY } = require('./config.js')
 
@@ -19,17 +22,16 @@ const getTxs = wrap(async () => {
   const blockBody = await blockRes.json()
   const { transactions } = blockBody.result
 
-  return transactions || []
+  return [transactions || [], Number(blockNum) || 0]
 })
 
 let data = []
 
 const main = async () => {
-  const txs = await getTxs()
+  const [ txs, blockNumber ] = await getTxs()
   const gwei = map( pipe(prop('gasPrice'), WeiToGwei), txs )
   const sorted = sort((a,b) => a - b, gwei)
   
-  const blockNumber = Number(txs[0].blockNumber)
   const blockMin = sorted[0]
   const blockMean = mean(gwei)
   const blockMedian = median(gwei)
@@ -52,14 +54,16 @@ const main = async () => {
   }
 
   data.push({ blockNumber, min: blockMin, mean: blockMean, median: blockMedian, max: blockMax, buckets })
+  data = reverse(data)
   console.clear()
-  console.log(data && data[data.length - 1])
+  console.log(data && data[0])
 }
 
 main()
 setInterval(main, 5000)
 
-module.exports = (req,res) => {
+server.get('/api', wrap(async (req,res) => {
   res.json(data)
-}
+}))
 
+server.listen(3000, () => console.log('serving...'))
