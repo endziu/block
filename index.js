@@ -1,9 +1,4 @@
 const fetch = require('node-fetch')
-const express = require('express')
-const compression = require('compression')
-const server = express()
-server.use(compression())
-
 const { __, map, reduce, filter, pipe, prop, juxt, head, median, mean, min, max, sort, divide } = require('ramda')
 
 const { ETHERSCAN_APIKEY } = require('./config.js')
@@ -62,11 +57,9 @@ const main = async () => {
 }
 
 main()
-
 setInterval(main, 5000)
 
-server.get('/api', wrap(async (req,res) => {
+module.exports = (req,res) => {
   res.json(data)
-}))
+}
 
-server.listen(3000)
