@@ -27,8 +27,7 @@ const getBlock = wrap(async () => {
 let data = []
 
 const main = async () => {
-  const [block, blockNo] = await getBlock()
-  const blockNumber = Number(blockNo)
+  const [block, blockNumber] = await getBlock()
   const { transactions } = block
   const gwei = map( pipe(prop('gasPrice'), WeiToGwei), transactions )
   const sorted = sort((a,b) => a - b, gwei)
@@ -51,12 +50,12 @@ const main = async () => {
     data = data.slice(1)
   }
 
-  if (data.length > 0 && data[data.length -1].blockNumber === blockNumber) {
+  if (data.length > 0 && data[data.length -1].blockNumber[0] === blockNumber) {
     console.log('waiting for a block...')
     return
   }
 
-  data.push({ blockNumber, min: blockMin, mean: blockMean, median: blockMedian, max: blockMax, buckets })
+  data.push({ blockNumber:[blockNumber, Number(blockNumber)], min: blockMin, mean: blockMean, median: blockMedian, max: blockMax, buckets })
 
   console.clear()
   console.log(data && data[data.length -1])
