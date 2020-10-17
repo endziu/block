@@ -11,7 +11,7 @@ const GweiToEther = WeiToGwei
 const WeiToEther = pipe(WeiToGwei, GweiToEther)
 const wrap = fn => (...args) => fn(...args).catch(args[2])
 
-const getTxs = wrap(async () => {
+const getBlock = wrap(async () => {
   const eth_block_num = `https://api.etherscan.io/api?module=proxy&action=eth_blockNumber&apikey=${ETHERSCAN_APIKEY}`
   const blockNumRes = await fetch(eth_block_num)
   const blockNumBody = await blockNumRes.json()
@@ -20,16 +20,17 @@ const getTxs = wrap(async () => {
   const eth_block = `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${blockNum}&boolean=true&apikey=${ETHERSCAN_APIKEY}`
   const blockRes = await fetch(eth_block)
   const blockBody = await blockRes.json()
-  const { transactions } = blockBody.result
-
-  return [transactions || [], Number(blockNum) || 0]
+  const block = blockBody.result
+  return [block, blockNum]
 })
 
 let data = []
 
 const main = async () => {
-  const [ txs, blockNumber ] = await getTxs()
-  const gwei = map( pipe(prop('gasPrice'), WeiToGwei), txs )
+  const [block, blockNo] = await getBlock()
+  const blockNumber = Number(blockNo)
+  const { transactions } = block
+  const gwei = map( pipe(prop('gasPrice'), WeiToGwei), transactions )
   const sorted = sort((a,b) => a - b, gwei)
   
   const blockMin = sorted[0]
@@ -49,21 +50,24 @@ const main = async () => {
   if (data.length > 239) {
     data = data.slice(1)
   }
+
   if (data.length > 0 && data[data.length -1].blockNumber === blockNumber) {
+    console.log('waiting for a block...')
     return
   }
 
   data.push({ blockNumber, min: blockMin, mean: blockMean, median: blockMedian, max: blockMax, buckets })
-  data = reverse(data)
+
   console.clear()
-  console.log(data && data[0])
+  console.log(data && data[data.length -1])
 }
 
 main()
-setInterval(main, 5000)
+setInterval(main, 2000)
 
 server.get('/api', wrap(async (req,res) => {
-  res.json(data)
+  const blockInfo = reverse(data)
+  res.json(blockInfo)
 }))
 
 server.listen(3000, () => console.log('serving...'))
