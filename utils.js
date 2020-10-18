@@ -1,3 +1,5 @@
+const MongoClient = require('mongodb').MongoClient
+const { MONGO_CONNECTION_STRING } = require('./config.js')
 const { __, pipe, divide } = require('ramda')
 const fetch = require('node-fetch')
 
@@ -21,6 +23,25 @@ const blockUrl = (num, key) =>
 
 const inRange = (n1, n2 = Infinity) => (p) => p >= n1 && p < n2
 
+async function getDatabaseCollection() {
+  const client = await new MongoClient(
+    MONGO_CONNECTION_STRING,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+  await client.connect()
+  const db = client.db("gas")
+  return db.collection("gas")
+}
+
+async function saveGasData(item) {
+  try{
+    const dbCollection = await getDatabaseCollection()
+    await dbCollection.insertOne(item)
+  } catch(err) {
+    console.error(err)
+  }
+}
+
 module.exports = {
   WeiToGwei,
   GweiToEther,
@@ -29,5 +50,7 @@ module.exports = {
   fetchJson,
   blockNumUrl,
   blockUrl,
-  inRange
+  inRange,
+  getDatabaseCollection,
+  saveGasData
 }
