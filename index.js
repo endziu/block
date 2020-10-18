@@ -14,21 +14,22 @@ let data = []
 
 const main = async () => {
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
-  const block = await fetchJson(blockUrl(blockNumber, ETHERSCAN_APIKEY))
-  
-  const { transactions } = block
-  const getGasPriceGwei = map( pipe(prop('gasPrice'), WeiToGwei) )
-  const prices = getGasPriceGwei( transactions ).sort((a, b) => a - b)
-
-  if (data.length > 128) {
-    data = data.slice(1)
-  }
 
   if (data.length > 0 && data[data.length - 1].blockNumber[0] === blockNumber) {
     console.log('waiting for a block...')
     return
   }
 
+  if (data.length > 128) {
+    data = data.slice(1)
+  }
+
+  const block = await fetchJson(blockUrl(blockNumber, ETHERSCAN_APIKEY))
+
+  const { transactions } = block
+  const getGasPriceGwei = map(pipe(prop('gasPrice'), WeiToGwei))
+  const prices = getGasPriceGwei(transactions).sort((a, b) => a - b)
+  
   data.push({
     blockNumber: [blockNumber, Number(blockNumber)],
     min: prices[0],
