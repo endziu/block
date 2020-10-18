@@ -30,7 +30,7 @@ async function getDatabaseCollection() {
   )
   await client.connect()
   const db = client.db("gas")
-  return db.collection("gas")
+  return db.collection("blocks")
 }
 
 async function saveGasData(item) {

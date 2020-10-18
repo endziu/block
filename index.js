@@ -3,15 +3,15 @@ const { ETHERSCAN_APIKEY, MONGO_CONNECTION_STRING } = require('./config.js')
 const R = require('ramda')
 const { pipe, map, filter, prop, mean, median, sort, reverse } = R
 const utils = require('./utils.js')
-const { blockNumUrl, blockUrl, fetchJson, inRange, wrap, WeiToGwei, saveGasData } = utils
+const { blockNumUrl, blockUrl, fetchJson, inRange, wrap, WeiToGwei, saveGasData, getDatabaseCollection } = utils
 
 let lastBlockNumber
 
 const main = async () => {
-  //const dbCollection = await getDatabaseCollection()
-  //const items = await dbCollection.find().toArray()
-  //console.log(items.length)
-
+  // const dbCollection = await getDatabaseCollection()
+  // const items = await dbCollection.find().toArray()
+  // console.log(items.length)
+  
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
 
   if (blockNumber - lastBlockNumber > 1) {
