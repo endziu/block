@@ -19,7 +19,7 @@ const blockNumUrl = (key) =>
 const blockUrl = (num, key) =>
   `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${num}&boolean=true&apikey=${key}`
 
-const inRange = (n1, n2 = Infinity) => (p) => p > n1 && p < n2
+const inRange = (n1, n2 = Infinity) => (p) => p >= n1 && p < n2
 
 module.exports = {
   WeiToGwei,
