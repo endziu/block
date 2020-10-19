@@ -8,10 +8,6 @@ const { blockNumUrl, blockUrl, fetchJson, inRange, wrap, WeiToGwei, saveGasData,
 let lastBlockNumber
 
 const main = async () => {
-  // const dbCollection = await getDatabaseCollection()
-  // const items = await dbCollection.find().toArray()
-  // console.log(items.length)
-  
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
 
   if (blockNumber - lastBlockNumber > 1) {
@@ -30,6 +26,7 @@ const main = async () => {
   lastBlockNumber = blockNumber
 
   const block = await fetchJson(blockUrl(blockNumber, ETHERSCAN_APIKEY))
+  /*
   const { transactions } = block
   const getGasPriceGwei = map(pipe(prop('gasPrice'), WeiToGwei))
   const prices = getGasPriceGwei(transactions).sort((a, b) => a - b)
@@ -52,10 +49,11 @@ const main = async () => {
       "100-#":  filter(inRange(100), prices).length
     }
   }
+  */
 
-  await saveGasData(payload)
+  await saveGasData(block)
   console.clear()
-  console.log(payload)
+  // console.log(payload)
   console.log('block saved to db.')
 }
 
