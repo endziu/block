@@ -26,36 +26,11 @@ const main = async () => {
   lastBlockNumber = blockNumber
 
   const block = await fetchJson(blockUrl(blockNumber, ETHERSCAN_APIKEY))
-  /*
-  const { transactions } = block
-  const getGasPriceGwei = map(pipe(prop('gasPrice'), WeiToGwei))
-  const prices = getGasPriceGwei(transactions).sort((a, b) => a - b)
-  
-  const payload = {
-    blockNumber: [blockNumber, Number(blockNumber)],
-    min: prices[0],
-    mean: mean(prices),
-    median: median(prices),
-    max: prices[prices.length - 1],
-    gasUsed: Number(block.gasUsed),
-    gasLimit: Number(block.gasLimit),
-    txsCount: block.transactions.length,
-    buckets: {
-      "0-20": filter(inRange(0, 20), prices).length,
-      "20-40": filter(inRange(20, 40), prices).length,
-      "40-60": filter(inRange(40, 60), prices).length,
-      "60-80": filter(inRange(60, 80), prices).length,
-      "80-100": filter(inRange(80, 100), prices).length,
-      "100-#":  filter(inRange(100), prices).length
-    }
-  }
-  */
-
   await saveGasData(block)
+
   console.clear()
-  // console.log(payload)
   console.log('block saved to db.')
 }
-
-setInterval(main, 2000)
+main()
+// setInterval(main, 2000)
 
