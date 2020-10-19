@@ -11,8 +11,7 @@ const main = async () => {
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
 
   if (blockNumber - lastBlockNumber > 1) {
-    const range = blockNumber - lastBlockNumber
-    const missedNumber = Number(lastBlockNumber) + (range -1)
+    const missedNumber = Number(lastBlockNumber) + 1
     const missedBlock = await fetchJson(blockUrl(missedNumber.toString(16),ETHERSCAN_APIKEY))
     await saveGasData(missedBlock)
     console.log('missed block saved to db.') 
@@ -31,6 +30,7 @@ const main = async () => {
   console.clear()
   console.log('block saved to db.')
 }
-main()
-// setInterval(main, 2000)
+
+//main()
+setInterval(main, 2000)
 
