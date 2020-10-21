@@ -6,7 +6,8 @@ const utils = require('./utils.js')
 const { blockNumUrl, blockUrl, fetchJson, inRange, wrap, WeiToGwei, saveGasData, getDatabaseCollection } = utils
 
 let lastBlockNumber
-let index = 0
+let indexMissed = 0
+let indexSaved = 0
 
 const main = async () => {
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
@@ -16,7 +17,7 @@ const main = async () => {
     const missedBlock = await fetchJson(blockUrl(missedNumber.toString(16),ETHERSCAN_APIKEY))
     await saveGasData(missedBlock)
     console.log('missed block saved to db.') 
-    index++
+    indexMissed++
   }
 
   if (lastBlockNumber && lastBlockNumber === blockNumber) {
@@ -28,11 +29,11 @@ const main = async () => {
 
   const block = await fetchJson(blockUrl(blockNumber, ETHERSCAN_APIKEY))
   await saveGasData(block)
-
+  indexSaved++
   console.clear()
-  console.log('block saved to db.', index)
+  console.log('block saved to db.', indexSaved, indexMissed)
 }
 
-//main()
+main()
 setInterval(main, 2000)
 
