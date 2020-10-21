@@ -1,6 +1,6 @@
 const R = require('ramda')
-const { head, pipe, compose, map, filter, reduce, juxt, prop, concat, sort, reverse, add, length, mean, median } = R
-const { getDatabaseCollection, WeiToGwei, inRange } = require('./utils.js')
+const { pipe, map, reduce, prop, concat, sort, mean, median } = R
+const { getDatabaseCollection, WeiToGwei, bucket } = require('./utils.js')
 
 const diff = (a,b) => a - b
 const peek = _ => {console.log(_);return _;}
@@ -32,37 +32,22 @@ const main = async () => {
     pipe(
       prop("transactions"),
       getGasPriceFromTx,
-      txs => ({
-        "0-10": filter(inRange(0,10),txs).length,
-        "10-20": filter(inRange(10,20),txs).length,
-        "20-30": filter(inRange(20,30),txs).length,
-        "40-50": filter(inRange(30,40),txs).length,
-        "50-60": filter(inRange(50,60),txs).length,
-        "70-80": filter(inRange(70,80),txs).length,
-        "90-100": filter(inRange(90,100),txs).length,
-        "100-110": filter(inRange(100,110),txs).length,
-        "110-120": filter(inRange(110,120),txs).length,
-        "120-130": filter(inRange(120,130),txs).length,
-        "130-140": filter(inRange(130,140),txs).length,
-        "140-150": filter(inRange(140,150),txs).length,
-        "150-160": filter(inRange(150,160),txs).length,
-        "160-170": filter(inRange(160,170),txs).length,
-        "170-180": filter(inRange(170,180),txs).length,
-        "180-190": filter(inRange(180,190),txs).length,
-        "190-200": filter(inRange(190,200),txs).length,
-        "200-#": filter(inRange(200),txs).length
-      })
+      txs => {
+        const numList = new Array(20).fill(1).map((_,i) => i * 10 + 10)
+        const objList = map((n) => ({ [n]: bucket([n - 10, n])(txs) }), numList)
+        const buckets = reduce((prev,curr) => Object.assign(prev,curr),{},objList)
+        return buckets 
+      }
     )
   )
 
-  console.log(txsToBuckets(blocks)[17])
   console.log("min: ", minGas)
   console.log("mean: ", meanGas)
   console.log("median: ", medianGas)
   console.log("max: ", maxGas)
   console.log("Txs: ", getTxs(blocks).length)
+  console.log("random block", txsToBuckets(blocks)[Math.round(Math.random()*blocks.length)+1])
 
 }
 
 main()
-

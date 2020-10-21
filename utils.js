@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient
 const { MONGO_CONNECTION_STRING } = require('./config.js')
-const { __, pipe, divide } = require('ramda')
+const { __, pipe, divide, length, filter } = require('ramda')
 const fetch = require('node-fetch')
 
 const WeiToGwei = divide(__, 1e9)
@@ -22,6 +22,8 @@ const blockUrl = (num, key) =>
   `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${num}&boolean=true&apikey=${key}`
 
 const inRange = (n1, n2 = Infinity) => (p) => p >= n1 && p < n2
+
+const bucket = ([min, max = Infinity]) => txs => length(filter(inRange(min,max), txs))
 
 async function getDatabaseCollection() {
   const client = await new MongoClient(
@@ -51,6 +53,7 @@ module.exports = {
   blockNumUrl,
   blockUrl,
   inRange,
+  bucket,
   getDatabaseCollection,
   saveGasData
 }
