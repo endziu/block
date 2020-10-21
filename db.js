@@ -7,7 +7,7 @@ const peek = _ => {console.log(_);return _;}
 
 const main = async () => {
   const collection = await getDatabaseCollection()
-  const blocks = await collection.find().limit(3).toArray()
+  const blocks = await collection.find().limit(100).toArray()
 
   const getTxs = pipe(
     map(prop("transactions")),
@@ -22,7 +22,7 @@ const main = async () => {
     )
   )
 
-  const gwei = pipe(getTxs, getGasPriceFromTx, sort(diff))([head(blocks)])
+  const gwei = pipe(getTxs, getGasPriceFromTx, sort(diff))(blocks)
   const minGas = gwei[0]
   const maxGas = gwei[gwei.length - 1]
   const meanGas = mean(gwei)
@@ -31,9 +31,7 @@ const main = async () => {
   const txsToBuckets = map(
     pipe(
       prop("transactions"),
-      map(prop("gasPrice")),
-      map(Number),
-      map(WeiToGwei),
+      getGasPriceFromTx,
       txs => ({
         "0-10": filter(inRange(0,10),txs).length,
         "10-20": filter(inRange(10,20),txs).length,
@@ -57,7 +55,7 @@ const main = async () => {
     )
   )
 
-  console.log(txsToBuckets(blocks)[0])
+  console.log(txsToBuckets(blocks)[17])
   console.log("min: ", minGas)
   console.log("mean: ", meanGas)
   console.log("median: ", medianGas)
