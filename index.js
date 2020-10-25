@@ -1,9 +1,8 @@
-const fetch = require('node-fetch')
+const { blockNumUrl, blockUrl, fetchJson } = require('./utils.js')
 const { ETHERSCAN_APIKEY, MONGO_CONNECTION_STRING } = require('./config.js')
-const utils = require('./utils.js')
-const { blockNumUrl, blockUrl, fetchJson, saveToDb } = utils
+const { saveToDb } = require('./db.js')
 
-let b
+let b;
 
 const main = async () => {
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
