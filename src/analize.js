@@ -31,12 +31,11 @@ const main = async () => {
   const txsToBuckets = pipe(
     prop("transactions"),
     getGasPriceFromTx,
-    txs => {
-      const numList = concat(range(1, 9, 1), range(10, 200, 10))
-      const objList = map((n) => ({ [n]: bucket([n <= 10 ? n - 1 : n - 10, n])(txs) }), numList)
-      const buckets = reduce((prev,curr) => Object.assign(prev,curr),{},objList)
-      return buckets 
-    }
+    txs =>
+      pipe(
+        map(n => ({ [n]: bucket([n <= 10 ? n - 1 : n - 10, n])(txs) })),
+        reduce((prev,curr) => Object.assign(prev,curr), {})
+      )(concat(range(1, 9, 1), range(10, 200, 10)))
   )
 
 
