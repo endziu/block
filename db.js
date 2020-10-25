@@ -11,7 +11,7 @@ async function getDatabaseCollection() {
     const db = client.db("gas")
     return db.collection("blocks")
   } catch(e) {
-    console.error(e)
+    console.error("could not get collection", e)
   }
 }
 
@@ -20,7 +20,7 @@ async function saveToDb(item) {
     const dbCollection = await getDatabaseCollection()
     await dbCollection.insertOne(item)
   } catch(err) {
-    console.error(err)
+    console.error("error saving to db", err)
   }
 }
 

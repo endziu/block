@@ -1,8 +1,10 @@
+const { getDatabaseCollection } = require('./db.js')
+const { WeiToGwei, bucket } = require('./utils.js')
+
 const R = require('ramda')
 const { pipe, map, reduce, prop, concat, sort, mean, median } = R
-const { getDatabaseCollection, WeiToGwei, bucket } = require('./utils.js')
 
-const diff = (a,b) => a - b
+const diff = (a, b) => a - b
 const peek = _ => {console.log(_);return _;}
 
 const main = async () => {
@@ -40,14 +42,13 @@ const main = async () => {
       }
     )
   )
-
+  console.log("Blocks: ", blocks.length)
+  console.log("Txs: ", getTxs(blocks).length)
   console.log("min: ", minGas)
   console.log("mean: ", meanGas)
   console.log("median: ", medianGas)
   console.log("max: ", maxGas)
-  console.log("Txs: ", getTxs(blocks).length)
   console.log("random block", txsToBuckets(blocks)[Math.round(Math.random()*blocks.length)+1])
-
 }
 
 main()

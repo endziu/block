@@ -26,7 +26,7 @@ const main = async () => {
       const n = "0x" + (Number(blockNumber) + i - 1).toString(16)
       const block = await fetchJson(blockUrl(n, ETHERSCAN_APIKEY))
       await saveToDb(block)
-      console.log(difference, "saving missing block: ", Number(block.number))
+      console.log(difference, "saving missing block: ", Number(n))
     })
   }
 
