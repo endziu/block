@@ -4,10 +4,10 @@ const { saveToDb, dropCollection } = require('./db.js')
 
 let b;
 
-const clearDB = async () => {
+(async function() {
   await dropCollection("blocks")
   console.log("collection clear")
-}
+})();
 
 const main = async () => {
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
@@ -38,7 +38,6 @@ const main = async () => {
   b = blockNumber
 }
 
-clearDB()
 main()
 setInterval(main, 3000)
 
