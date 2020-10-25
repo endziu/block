@@ -24,7 +24,7 @@ const WeiToEther = pipe(WeiToGwei, GweiToEther)
 const wrap = fn => (...args) => fn(...args).catch(args[2])
 const inRange = (n1, n2 = Infinity) => (p) => p >= n1 && p < n2
 const bucket = ([min, max = Infinity]) => txs => length(filter(inRange(min,max), txs))
-
+const diff = (a, b) => a - b
 
 module.exports = {
   WeiToGwei,
@@ -35,5 +35,6 @@ module.exports = {
   blockNumUrl,
   blockUrl,
   inRange,
-  bucket
+  bucket,
+  diff
 }

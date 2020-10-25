@@ -9,7 +9,7 @@ async function getDatabaseCollection() {
     )
     await client.connect()
     const db = client.db("gas")
-    return db.collection("blocks")
+    return [ db.collection("blocks"), client ]
   } catch(e) {
     console.error("could not get collection", e)
   }
@@ -17,11 +17,12 @@ async function getDatabaseCollection() {
 
 async function saveToDb(item) {
   try{
-    const dbCollection = await getDatabaseCollection()
+    const [ dbCollection, client ] = await getDatabaseCollection()
     await dbCollection.insertOne(item)
+    client.close()
   } catch(err) {
     console.error("error saving to db", err)
-  }
+  } 
 }
 
 module.exports = {

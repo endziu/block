@@ -1,14 +1,12 @@
 const { getDatabaseCollection } = require('./db.js')
-const { WeiToGwei, bucket } = require('./utils.js')
+const { WeiToGwei, bucket, diff } = require('./utils.js')
 
 const R = require('ramda')
 const { pipe, map, reduce, prop, concat, sort, mean, median } = R
-
-const diff = (a, b) => a - b
-const peek = _ => {console.log(_);return _;}
+const { range } = require('range-of-numbers')
 
 const main = async () => {
-  const collection = await getDatabaseCollection()
+  const [ collection, client ] = await getDatabaseCollection()
   const blocks = await collection.find().limit(100).toArray()
 
   const getTxs = pipe(
@@ -30,25 +28,29 @@ const main = async () => {
   const meanGas = mean(gwei)
   const medianGas = median(gwei)
 
-  const txsToBuckets = map(
-    pipe(
-      prop("transactions"),
-      getGasPriceFromTx,
-      txs => {
-        const numList = new Array(20).fill(1).map((_,i) => i * 10 + 10)
-        const objList = map((n) => ({ [n]: bucket([n - 10, n])(txs) }), numList)
-        const buckets = reduce((prev,curr) => Object.assign(prev,curr),{},objList)
-        return buckets 
-      }
-    )
+  const txsToBuckets = pipe(
+    prop("transactions"),
+    getGasPriceFromTx,
+    txs => {
+      const numList = concat(range(1, 9, 1), range(10, 200, 10))
+      const objList = map((n) => ({ [n]: bucket([n <= 10 ? n - 1 : n - 10, n])(txs) }), numList)
+      const buckets = reduce((prev,curr) => Object.assign(prev,curr),{},objList)
+      return buckets 
+    }
   )
+
+
+  const buckets = map(txsToBuckets)
+
   console.log("Blocks: ", blocks.length)
   console.log("Txs: ", getTxs(blocks).length)
   console.log("min: ", minGas)
   console.log("mean: ", meanGas)
   console.log("median: ", medianGas)
   console.log("max: ", maxGas)
-  console.log("random block", txsToBuckets(blocks)[Math.round(Math.random()*blocks.length)+1])
+  console.log("buckets", buckets(blocks))
+
+  client.close()
 }
 
 main()
