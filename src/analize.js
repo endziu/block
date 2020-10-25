@@ -48,7 +48,7 @@ const main = async () => {
   console.log("mean: ", meanGas)
   console.log("median: ", medianGas)
   console.log("max: ", maxGas)
-  console.log("buckets", buckets(blocks))
+  console.log("bucket", buckets(blocks)[blocks.length - 1])
 
   client.close()
 }
