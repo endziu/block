@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon"
+    "start": "node index.js && node src/analize.js",
+    "blocks": "node src/saveBlocks.js",
+    "analize": "node src/analize.js"
   },
   "keywords": [],
   "author": "",
@@ -16,8 +17,5 @@
     "node-fetch": "^2.6.1",
     "ramda": "^0.27.1",
     "range-of-numbers": "^1.1.6"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.5"
   }
 }

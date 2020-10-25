@@ -25,7 +25,18 @@ async function saveToDb(item) {
   } 
 }
 
+async function dropCollection(name) {
+  try {
+    const [ dbCollection, client ] = await getDatabaseCollection()
+    await dbCollection.drop()
+    client.close()
+  } catch(err) {
+    console.log("error dropping collection", err)
+  }
+}
+
 module.exports = {
   getDatabaseCollection,
-  saveToDb
+  saveToDb,
+  dropCollection
 }

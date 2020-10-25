@@ -17,6 +17,9 @@ const blockNumUrl = (key) =>
 const blockUrl = (num, key) =>
   `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${num}&boolean=true&apikey=${key}`
 
+const gasOracleUrl = (key) => `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${key}`
+const gasTimeFromPrice = (weiPrice, key) => `https://api.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=${weiPrice}&apikey=${key}`
+
 const { __, pipe, divide, length, filter } = require('ramda')
 const WeiToGwei = divide(__, 1e9)
 const GweiToEther = WeiToGwei
@@ -34,6 +37,8 @@ module.exports = {
   fetchJson,
   blockNumUrl,
   blockUrl,
+  gasOracleUrl,
+  gasTimeFromPrice,
   inRange,
   bucket,
   diff
