@@ -23,7 +23,7 @@ const blockNumUrl = (key) =>
   `https://api.etherscan.io/api?module=proxy&action=eth_blockNumber&apikey=${key}`
 
 const blockUrl = (num, key) =>
-  `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${num}&boolean=true&apikey=${key}`
+  `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${num}&boolean=false&apikey=${key}`
 
 const inRange = (n1, n2 = Infinity) => (p) => p >= n1 && p < n2
 

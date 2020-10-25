@@ -1,38 +1,38 @@
 const fetch = require('node-fetch')
 const { ETHERSCAN_APIKEY, MONGO_CONNECTION_STRING } = require('./config.js')
-const R = require('ramda')
-const { pipe, map, filter, prop, mean, median, sort, reverse } = R
 const utils = require('./utils.js')
-const { blockNumUrl, blockUrl, fetchJson, inRange, wrap, WeiToGwei, saveToDb, getDatabaseCollection } = utils
+const { blockNumUrl, blockUrl, fetchJson, saveToDb } = utils
 
-let lastBlockNumber
-let indexMissed = 0
-let indexSaved = 0
+let b
 
 const main = async () => {
   const blockNumber = await fetchJson(blockNumUrl(ETHERSCAN_APIKEY))
+  console.log(blockNumber - b)
+  const difference = blockNumber - b
 
-  if (blockNumber - lastBlockNumber > 1) {
-    const missedNumber = Number(lastBlockNumber) + 1
-    const missedBlock = await fetchJson(blockUrl(missedNumber.toString(16),ETHERSCAN_APIKEY))
-    await saveToDb(missedBlock)
-    console.log('missed block saved to db.') 
-    indexMissed++
-  }
-
-  if (lastBlockNumber && lastBlockNumber === blockNumber) {
-    console.log('waiting for a block...')
+  if (difference === 0 || difference < 0) {
+    console.log('waiting...')
     return
   }
-  
-  const block = await fetchJson(blockUrl(blockNumber, ETHERSCAN_APIKEY))
-  await saveToDb(block)
 
-  indexSaved++
-  lastBlockNumber = blockNumber
+  if(difference === 1) {
+    const nextHex = "0x" + Number(blockNumber).toString(16)
+    const block = await fetchJson(blockUrl(nextHex, ETHERSCAN_APIKEY))
+    await saveToDb(block)
+    console.log("saving block: ", Number(blockNumber))
+  }
 
-  console.clear()
-  console.log('block saved to db.', indexSaved, indexMissed)
+  if (difference > 1) {
+    const list = new Array(difference).fill("0")
+    list.forEach(async (s,i,arr) => {
+      const n = "0x" + (Number(blockNumber) + i - 1).toString(16)
+      const block = await fetchJson(blockUrl(n, ETHERSCAN_APIKEY))
+      await saveToDb(block)
+      console.log("saving missing block: ", Number(block.number))
+    })
+  }
+
+  b = blockNumber
 }
 
 main()
