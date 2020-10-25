@@ -17,7 +17,7 @@ const main = async () => {
     const nextHex = "0x" + Number(blockNumber).toString(16)
     const block = await fetchJson(blockUrl(nextHex, ETHERSCAN_APIKEY))
     await saveToDb(block)
-    console.log(difference, "saving block: ", Number(blockNumber))
+    console.log(difference, "saving current block: ", Number(nextHex))
   }
 
   if (difference > 1) {
